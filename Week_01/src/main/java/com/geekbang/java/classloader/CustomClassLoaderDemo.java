@@ -1,4 +1,4 @@
-package com.geekbang.java;
+package com.geekbang.java.classloader;
 
 import java.lang.reflect.Method;
 

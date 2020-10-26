@@ -1,4 +1,4 @@
-package com.geekbang.java;
+package com.geekbang.java.classloader;
 
 
 import java.io.*;
@@ -12,7 +12,7 @@ import java.io.*;
 public class CustomClassLoader extends ClassLoader {
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    protected Class<?> findClass(String name) {
         String filePath = System.getProperty("user.dir") + "/Week_01/src/main/Resources/META-INF/Hello.xlass";
         try (InputStream in = new FileInputStream(filePath)) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
