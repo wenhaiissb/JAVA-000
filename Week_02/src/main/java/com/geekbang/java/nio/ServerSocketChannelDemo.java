@@ -32,6 +32,6 @@ public class ServerSocketChannelDemo {
         acceptorSvr.configureBlocking(false);
         // 3. 创建 Reactor 线程，创建多路复用器并启动线程
         Selector selector = Selector.open();
-        new Thread(new ReactorTask()).start();
+//        new Thread(new ReactorTask()).start();
     }
 }
