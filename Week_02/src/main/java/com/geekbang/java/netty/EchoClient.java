@@ -1,11 +1,12 @@
-package com.geekbang.java.nio;
+package com.geekbang.java.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.oio.OioSocketChannel;
 
 import java.net.InetSocketAddress;
 
@@ -21,18 +22,23 @@ public class EchoClient {
 
     public void start() throws Exception {
         // 1.创建 EventLoopGroup
-        NioEventLoopGroup group = new NioEventLoopGroup();
+//        NioEventLoopGroup group = new NioEventLoopGroup();
+       OioEventLoopGroup group = new OioEventLoopGroup();
         try {
             // 2.创建 Bootstrap
             Bootstrap b = new Bootstrap();
             b.group(group)
                     //
-                    .channel(NioSocketChannel.class)
+                    .channel(OioSocketChannel.class)
+//                    .channel(NioSocketChannel.class)
                     .remoteAddress(new InetSocketAddress(host, port))
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new EchoClientHandler());
+//                            ch.pipeline().addLast(new EchoClientHandler());
+                            ch.pipeline().addLast(new ChannelOutboundHandlerAdapter() {
+
+                            });
                         }
                     });
             ChannelFuture f = b.connect().sync();

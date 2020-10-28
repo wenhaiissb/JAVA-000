@@ -1,4 +1,4 @@
-package com.geekbang.java.nio;
+package com.geekbang.java.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -8,6 +8,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 
+/**
+ * echo server {@link ChannelHandler}
+ *
+ * @author wenhai
+ * @date 2020/10/27
+ */
 @ChannelHandler.Sharable
 public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Override
