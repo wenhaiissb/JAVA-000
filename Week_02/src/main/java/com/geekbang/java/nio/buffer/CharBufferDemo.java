@@ -13,7 +13,36 @@ import java.util.Arrays;
 public class CharBufferDemo {
     public static void main(String[] args) throws IOException {
         // appendAndCharAtMethod();
-        putAndReadAndSubSequenceMethod();
+        // putAndReadAndSubSequenceMethod();
+        // wrapMethod();
+        lengthMethod();
+    }
+
+
+    /**
+     * {@link CharBuffer#length()} 等价于 {@link CharBuffer#remaining()} limit - position
+     */
+    private static void lengthMethod() {
+        CharBuffer charBuffer = CharBuffer.wrap("abcd");
+        System.out.println("position = " + charBuffer.position() + " , remaining = " + charBuffer.remaining() + " , length = " + charBuffer.length());
+        System.out.println(charBuffer.get());
+        System.out.println("position = " + charBuffer.position() + " , remaining = " + charBuffer.remaining() + " , length = " + charBuffer.length());
+        System.out.println(charBuffer.get());
+        System.out.println("position = " + charBuffer.position() + " , remaining = " + charBuffer.remaining() + " , length = " + charBuffer.length());
+        System.out.println(charBuffer.get());
+        System.out.println("position = " + charBuffer.position() + " , remaining = " + charBuffer.remaining() + " , length = " + charBuffer.length());
+        System.out.println(charBuffer.get());
+        System.out.println("position = " + charBuffer.position() + " , remaining = " + charBuffer.remaining() + " , length = " + charBuffer.length());
+    }
+
+    private static void wrapMethod() {
+        CharBuffer charBuffer = CharBuffer.wrap("abcdefg", 3, 5);
+        System.out.println("charBuffer capacity = " + charBuffer.capacity() + " , position =" + charBuffer.position() + " , limit = " + charBuffer.limit());
+        for (int i = charBuffer.position(); i < charBuffer.limit(); i++) {
+            System.out.print(charBuffer.get() + " ");
+        }
+        System.out.println();
+        charBuffer.append("我是制度的，不能添加数据，会出现异常！");
     }
 
     /**
