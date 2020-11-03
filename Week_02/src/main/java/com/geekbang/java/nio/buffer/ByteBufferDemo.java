@@ -1,15 +1,14 @@
 package com.geekbang.java.nio.buffer;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 /**
- * {@link Buffer} 方法演示
+ * {@link ByteBuffer} 方法演示
  *
  * @author wenhai
  * @date 2020/11/3
  */
-public class BufferDemo {
+public class ByteBufferDemo {
     public static void main(String[] args) {
         duplicateAndSliceDifference();
     }
