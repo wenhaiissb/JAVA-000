@@ -20,16 +20,16 @@ public class FileChannelDemo {
     private static FileChannel inFileChannel;
     private static FileChannel outFileChannel;
 
-    static {
-        try {
-            fosRef = new FileOutputStream(new File(".\\Week_02\\src\\main\\resources/a.txt"));
-            fisRef = new FileInputStream(new File(".\\Week_02\\src\\main\\resources/b.txt"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        outFileChannel = fosRef.getChannel();
-        inFileChannel = fisRef.getChannel();
-    }
+//    static {
+//        try {
+//            fosRef = new FileOutputStream(new File(".\\Week_02\\src\\main\\resources/a.txt"));
+//            fisRef = new FileInputStream(new File(".\\Week_02\\src\\main\\resources/b.txt"));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        outFileChannel = fosRef.getChannel();
+//        inFileChannel = fisRef.getChannel();
+//    }
 
     public static void main(String[] args) throws Exception {
         // writeMethod();
@@ -38,7 +38,85 @@ public class FileChannelDemo {
         // bulkWriteMethod();
         // bulkReadMethod();
         // bulkRangeWriteMethod();
-        bulkRangeReadMethod();
+        // bulkRangeReadMethod();
+        // setChannelPosition();
+        // truncateMethod();
+        // ATransferToBMethod();
+        ATransferFromBMethod();
+    }
+
+    private static void ATransferFromBMethod() throws Exception {
+        RandomAccessFile fileA = new RandomAccessFile(".\\Week_02\\src\\main\\resources/a.txt", "rw");
+        RandomAccessFile fileB = new RandomAccessFile(".\\Week_02\\src\\main\\resources/b.txt", "rw");
+        FileChannel fileChannelA = fileA.getChannel();
+        FileChannel fileChannelB = fileB.getChannel();
+        System.out.println("fileA  transferFrom method before position = " + fileChannelA.position() + " ,size = " + fileA.length());
+        System.out.println("fileB  transferFrom method before position = " + fileChannelB.position() + " ,size = " + fileB.length());
+        fileChannelA.transferFrom(fileChannelB, 20, 100);
+        System.out.println("fileA  transferFrom method after position = " + fileChannelA.position() + " ,size = " + fileA.length());
+        System.out.println("fileB  transferFrom method after position = " + fileChannelB.position() + " ,size = " + fileB.length());
+    }
+
+    private static void ATransferToBMethod() throws Exception {
+        RandomAccessFile fileA = new RandomAccessFile(".\\Week_02\\src\\main\\resources/a.txt", "rw");
+        RandomAccessFile fileB = new RandomAccessFile(".\\Week_02\\src\\main\\resources/b.txt", "rw");
+        FileChannel fileChannelB = fileB.getChannel().position(9);
+        FileChannel fileChannelA = fileA.getChannel();
+        System.out.println("fileA  transferTo method before position = " + fileChannelA.position());
+        System.out.println("fileB  transferTo method before position = " + fileChannelB.position());
+        fileChannelA.transferTo(1, 100, fileChannelB);
+        System.out.println("fileB  transferTo method after position = " + fileChannelB.position());
+        System.out.println("fileA  transferTo method after position = " + fileChannelA.position());
+        fileA.close();
+        fileB.close();
+    }
+
+    /**
+     * {@link FileChannel#truncate(long)} 从文件开始截取
+     */
+    private static void truncateMethod() throws IOException {
+        ByteBuffer bb = ByteBuffer.wrap("12345678".getBytes());
+        outFileChannel.write(bb);
+        System.out.println("A size = " + outFileChannel.size() + " , position = " + outFileChannel.position());
+        // 小于文件大小: 123
+        outFileChannel.position(1);
+        outFileChannel.truncate(3);
+        // 等于文件大小: 12345678
+        // outFileChannel.truncate(outFileChannel.size());
+        // 大于文件大小: 12345678
+        // outFileChannel.truncate(outFileChannel.size());
+        // 文件位置大于给定大小,则将位置设置为该大小
+        // outFileChannel.position(1000);
+        System.out.println("B size = " + outFileChannel.size() + " , position = " + outFileChannel.position());
+        // outFileChannel.truncate(3);
+        // System.out.println("C size = " + outFileChannel.size() + " , position = " + outFileChannel.position());
+        outFileChannel.close();
+    }
+
+    /**
+     * 设置 Channel 的 position 的值,可以设置大于该文件当前大小的值是合法的,但这不会改变文件的大小
+     * {@link FileChannel#position(long)}
+     */
+    private static void setChannelPosition() throws Exception {
+
+        ByteBuffer bb = ByteBuffer.wrap("abcd".getBytes());
+        ByteBuffer bb2 = ByteBuffer.wrap("cde".getBytes());
+        FileOutputStream fileOutputStream = new FileOutputStream(new File(".\\Week_02\\src\\main\\resources/a.txt"));
+        FileChannel fileChannel = fileOutputStream.getChannel();
+        System.out.println("A FileChannel position = " + fileChannel.position() + " size = " + fileChannel.size());
+        fileChannel.write(bb);
+        System.out.println("B FileChannel position = " + fileChannel.position() + " size = " + fileChannel.size());
+        fileChannel.position(2);
+        System.out.println("C FileChannel position = " + fileChannel.position() + " size = " + fileChannel.size());
+        fileChannel.write(bb2);
+        System.out.println("D FileChannel position = " + fileChannel.position() + " size = " + fileChannel.size());
+        bb.position(3);
+        fileChannel.write(bb, 10);
+        System.out.println("F FileChannel position = " + fileChannel.position() + " size = " + fileChannel.size());
+        fileChannel.close();
+        fileOutputStream.close();
+
+
     }
 
     /**
