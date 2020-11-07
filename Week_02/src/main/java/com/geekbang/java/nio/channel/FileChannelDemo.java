@@ -2,8 +2,12 @@ package com.geekbang.java.nio.channel;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -41,13 +45,152 @@ public class FileChannelDemo {
         // bulkRangeReadMethod();
         // setChannelPosition();
         // truncateMethod();
-        // ATransferToBMethod();
-        ATransferFromBMethod();
+        // aTransferToBMethod();
+        // aTransferFromBMethod();
+        // fileLockMethod();
+        // shareLockCannotWrite();
+        // readOnlyMapMode();
+        // writeMapMode();
+        // privateMapMode();
+        // loadAndIsLoaded();
+        openFile();
     }
 
-    private static void ATransferFromBMethod() throws Exception {
-        RandomAccessFile fileA = new RandomAccessFile(".\\Week_02\\src\\main\\resources/a.txt", "rw");
-        RandomAccessFile fileB = new RandomAccessFile(".\\Week_02\\src\\main\\resources/b.txt", "rw");
+    private static void openFile() throws IOException, InterruptedException {
+        File file = new File("./d.txt");
+        Path path = file.toPath();
+        FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.DELETE_ON_CLOSE, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        fileChannel.write(ByteBuffer.wrap("1234".getBytes()));
+        TimeUnit.SECONDS.sleep(10);
+    }
+
+    private static void loadAndIsLoaded() throws Exception {
+        RandomAccessFile file = getRandomAccessFile("a");
+        FileChannel fileChannel = file.getChannel();
+        MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, 1);
+        System.out.println(mappedByteBuffer.isLoaded());
+        mappedByteBuffer.load();
+        System.out.println(mappedByteBuffer.isLoaded());
+    }
+
+    private static void privateMapMode() throws Exception {
+        RandomAccessFile file = getRandomAccessFile("a");
+        FileChannel fileChannel = file.getChannel();
+        System.out.println("fileChannel before map size = " + fileChannel.size());
+        MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.PRIVATE, 0, 11);
+        System.out.println("fileChannel after map size = " + fileChannel.size());
+        System.out.println("MappedByteBuffer(MapMode.PRIVATE) initialization position = " + mappedByteBuffer.position() + " , limit = " + mappedByteBuffer.limit() + " , capacity = " + mappedByteBuffer.capacity());
+        for (int i = 0; i < mappedByteBuffer.limit(); i++) {
+            System.out.print((char) mappedByteBuffer.get());
+        }
+        System.out.println();
+        System.out.println("MappedByteBuffer(MapMode.PRIVATE) position = " + mappedByteBuffer.position() + " , limit = " + mappedByteBuffer.limit() + " , capacity = " + mappedByteBuffer.capacity());
+        mappedByteBuffer.position(7);
+        mappedByteBuffer.put((byte) 'a');
+        mappedByteBuffer.put((byte) 'c');
+        mappedByteBuffer.put((byte) 'd');
+        mappedByteBuffer.put((byte) 'e');
+        System.out.println("MappedByteBuffer(MapMode.PRIVATE) put (a b c d) after fileChannel size = " + fileChannel.size());
+        ByteBuffer bb = ByteBuffer.allocate(20);
+        fileChannel.read(bb);
+        System.out.println(Arrays.toString(bb.array()));
+        mappedByteBuffer.rewind();
+        for (int i = 0; i < mappedByteBuffer.limit(); i++) {
+            System.out.print((char) mappedByteBuffer.get());
+        }
+    }
+
+    private static void writeMapMode() throws Exception {
+        RandomAccessFile file = getRandomAccessFile("a");
+        FileChannel fileChannel = file.getChannel();
+        ByteBuffer bb = ByteBuffer.allocate(100);
+        System.out.println("fileChannel position = " + fileChannel.position());
+        fileChannel.read(bb);
+        System.out.println("fileChannel position = " + fileChannel.position());
+        fileChannel.position(0);
+        System.out.println("fileChannel position = " + fileChannel.position());
+        System.out.println(Arrays.toString(bb.array()));
+        MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, 3);
+        System.out.println("MappedByteBuffer position = " + mappedByteBuffer.position() + " , limit = " + mappedByteBuffer.limit() + " , capacity = " + mappedByteBuffer.capacity());
+        for (int i = 0; i < mappedByteBuffer.limit(); i++) {
+            System.out.print((char) mappedByteBuffer.get());
+        }
+        mappedByteBuffer.put(1, (byte) 'h');
+        System.out.println();
+        System.out.println("MappedByteBuffer position = " + mappedByteBuffer.position() + " , limit = " + mappedByteBuffer.limit() + " , capacity = " + mappedByteBuffer.capacity());
+        mappedByteBuffer.flip();
+        for (int i = 0; i < mappedByteBuffer.limit(); i++) {
+            System.out.print((char) mappedByteBuffer.get());
+        }
+        System.out.println();
+        System.out.println(Arrays.toString(bb.array()));
+        fileChannel.close();
+        file.close();
+    }
+
+    private static void readOnlyMapMode() throws Exception {
+        RandomAccessFile file = getRandomAccessFile("a");
+        FileChannel fileChannel = file.getChannel();
+        MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, 3);
+        fileChannel.close();
+        file.close();
+        System.out.println("MappedByteBuffer position = " + mappedByteBuffer.position() + " , limit = " + mappedByteBuffer.limit() + " , capacity = " + mappedByteBuffer.capacity());
+        for (int i = 0; i < mappedByteBuffer.limit(); i++) {
+            System.out.println((char) mappedByteBuffer.get());
+        }
+        mappedByteBuffer.put((byte) 1);
+
+    }
+
+    private static void shareLockCannotWrite() throws Exception {
+        RandomAccessFile randomAccessFile = getRandomAccessFile("a");
+        FileChannel fileChannel = randomAccessFile.getChannel();
+        fileChannel.lock(1, 2, true);
+//        fileChannel.write(ByteBuffer.wrap("w2".getBytes()));
+        TimeUnit.SECONDS.sleep(1000);
+    }
+
+    public static void fileLockMethod() throws Exception {
+//        RandomAccessFile fileA = getRandomAccessFile("a");
+        FileOutputStream fileA = new FileOutputStream(".\\Week_02\\src\\main\\resources\\a.txt");
+        FileChannel fileChannel = fileA.getChannel();
+        ByteBuffer bb = ByteBuffer.wrap("123123".getBytes());
+        fileChannel.write(bb);
+//        System.out.println(Thread.currentThread().getName() + " A begin ");
+        Thread a = new Thread(() -> {
+            try {
+                System.out.println("fileChannel.lock start");
+                FileLock lock = fileChannel.lock(1, 2, false);
+                System.out.println("fileChannel.lock end");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        Thread b = new Thread(() -> {
+            try {
+                System.out.println("fileChannel.close start");
+                fileChannel.close();
+                System.out.println("fileChannel.close end");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        a.start();
+//        TimeUnit.SECONDS.sleep(1);
+        b.start();
+
+//        System.out.println(Thread.currentThread().getName() + "B end ");
+        TimeUnit.SECONDS.sleep(199);
+        fileChannel.close();
+        fileA.close();
+
+    }
+
+    private static void aTransferFromBMethod() throws Exception {
+        RandomAccessFile fileA = getRandomAccessFile("a");
+        RandomAccessFile fileB = getRandomAccessFile("b");
         FileChannel fileChannelA = fileA.getChannel();
         FileChannel fileChannelB = fileB.getChannel();
         System.out.println("fileA  transferFrom method before position = " + fileChannelA.position() + " ,size = " + fileA.length());
@@ -57,9 +200,13 @@ public class FileChannelDemo {
         System.out.println("fileB  transferFrom method after position = " + fileChannelB.position() + " ,size = " + fileB.length());
     }
 
-    private static void ATransferToBMethod() throws Exception {
-        RandomAccessFile fileA = new RandomAccessFile(".\\Week_02\\src\\main\\resources/a.txt", "rw");
-        RandomAccessFile fileB = new RandomAccessFile(".\\Week_02\\src\\main\\resources/b.txt", "rw");
+    public static RandomAccessFile getRandomAccessFile(String filename) throws FileNotFoundException {
+        return new RandomAccessFile(".\\Week_02\\src\\main\\resources\\" + filename + ".txt", "rw");
+    }
+
+    private static void aTransferToBMethod() throws Exception {
+        RandomAccessFile fileA = getRandomAccessFile("a");
+        RandomAccessFile fileB = getRandomAccessFile("b");
         FileChannel fileChannelB = fileB.getChannel().position(9);
         FileChannel fileChannelA = fileA.getChannel();
         System.out.println("fileA  transferTo method before position = " + fileChannelA.position());
