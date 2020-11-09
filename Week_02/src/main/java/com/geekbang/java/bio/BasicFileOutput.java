@@ -14,7 +14,8 @@ public class BasicFileOutput {
     public static void main(String[] args) throws IOException {
         int            lineCount    = 1;
         BufferedReader in           = new BufferedReader(new StringReader(BufferedInputFile.read(".\\Week_02\\src\\main\\java\\com\\geekbang\\java\\bio\\BasicFileOutput.java")));
-        PrintWriter    out          = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+//        PrintWriter    out          = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+        PrintWriter    out          = new PrintWriter(file);
         String s;
         while ((s = in.readLine()) != null) {
             out.println(lineCount++ + ":" + s);
