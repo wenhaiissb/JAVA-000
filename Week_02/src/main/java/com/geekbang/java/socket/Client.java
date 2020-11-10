@@ -1,8 +1,8 @@
 package com.geekbang.java.socket;
 
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName Client
@@ -30,13 +30,15 @@ public class Client {
             System.out.println("local port = " + socket.getLocalPort());
             System.out.println("remote port = " +socket.getPort());
             System.out.println("sendBuffer size = " + socket.getSendBufferSize());
-            InputStream inputStream = socket.getInputStream();
-            byte[] buffer = new byte[1];
-            int length;
+            TimeUnit.SECONDS.sleep(4);
 
-            while ((length = inputStream.read(buffer)) != -1) {
-                System.out.print(new String(buffer, 0, length));
-            }
+//            InputStream inputStream = socket.getInputStream();
+//            byte[] buffer = new byte[1];
+//            int length;
+//
+//            while ((length = inputStream.read(buffer)) != -1) {
+//                System.out.print(new String(buffer, 0, length));
+//            }
         } finally {
             System.out.println();
             System.out.println((start - System.currentTimeMillis()) / 1000);

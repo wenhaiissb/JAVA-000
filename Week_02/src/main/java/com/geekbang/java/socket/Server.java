@@ -18,17 +18,37 @@ public class Server {
         // setRcvBuffer();
         // getRemotePort();
         // shutdownMethod();
-        setSoLinger();
+        // setSoLinger();
+        setTimeout();
 
 
+    }
+
+    private static void setTimeout() throws IOException {
+        ServerSocket serverSocket = new ServerSocket(8881);
+        Socket accept = serverSocket.accept();
+        System.out.println("ServerSocket.accept 获得 Socket 的 默认 SO_TIMEOUT = " + accept.getSoTimeout());
+        InputStream inputStream = accept.getInputStream();
+        accept.setSoTimeout(3000);
+        System.out.println("Socket SO_TIMEOUT = " + accept.getSoTimeout());
+        byte[] buffer = new byte[1024];
+        int readLength;
+        long start = System.currentTimeMillis();
+        try {
+            while ((readLength = inputStream.read(buffer)) != -1) {
+                System.out.println(new String(buffer, 0, readLength));
+            }
+        } finally {
+            System.out.println("read time = " + (System.currentTimeMillis() - start) / 1000);
+        }
     }
 
     private static void setSoLinger() throws IOException {
         ServerSocket serverSocket = new ServerSocket(8881);
         Socket accept = serverSocket.accept();
-        System.out.println("ServerSocket.accept 获得 Socket 的 默认 SO_LINGER = "+accept.getSoLinger());
+        System.out.println("ServerSocket.accept 获得 Socket 的 默认 SO_LINGER = " + accept.getSoLinger());
         accept.setSoLinger(false, 0);
-        System.out.println("Socket SO_LINGER = "+accept.getSoLinger());
+        System.out.println("Socket SO_LINGER = " + accept.getSoLinger());
         OutputStream out = accept.getOutputStream();
         for (int i = 0; i < 10; i++) {
             out.write("123123123123333333333333333333313123122222222222222222222222222222222221".getBytes());

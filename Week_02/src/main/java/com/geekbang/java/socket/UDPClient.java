@@ -14,9 +14,11 @@ public class UDPClient {
     public static void main(String[] args) throws Exception {
         DatagramSocket datagramSocket = new DatagramSocket();
         datagramSocket.connect(new InetSocketAddress("localhost", 8888));
-//        byte[] bytes = "1234567890".getBytes();
-        byte[] bytes = new byte[66307];
-        DatagramPacket datagramPacket = new DatagramPacket(bytes, bytes.length);
+        byte[] bytes = "我是谢文海".getBytes();
+//        byte[] bytes = new byte[66307];
+        DatagramPacket datagramPacket = new DatagramPacket(new byte[]{}, 0);
+        datagramPacket.setData(bytes);
+        datagramPacket.setLength(3);
         datagramSocket.send(datagramPacket);
         datagramSocket.close();
     }
