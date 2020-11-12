@@ -22,11 +22,11 @@ public class Client {
 //        outputStream.close();
 //        TimeUnit.SECONDS.sleep(100);
         Socket socket = new Socket();
-        socket.bind(new InetSocketAddress("localhost",8888));
+//        socket.bind(new InetSocketAddress("localhost",8888));
         long start = System.currentTimeMillis();
         try {
             socket.setReceiveBufferSize(1);
-            socket.connect(new InetSocketAddress("localhost",8881));
+            socket.connect(new InetSocketAddress("localhost",8888));
             System.out.println("local port = " + socket.getLocalPort());
             System.out.println("remote port = " +socket.getPort());
             System.out.println("sendBuffer size = " + socket.getSendBufferSize());
