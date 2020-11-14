@@ -1,7 +1,14 @@
 package com.geekbang.java.nio.selector;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link Selector} 方法示例
@@ -77,7 +84,6 @@ public class SelectorDemo {
     }
 
     private static void wakeup() throws IOException, InterruptedException {
-    public static void main(String[] args) throws IOException {
         ServerSocketChannel ssc = ServerSocketChannel.open();
         ssc.configureBlocking(false);
         ssc.bind(new InetSocketAddress(8080));
@@ -132,34 +138,6 @@ public class SelectorDemo {
             }
         }
         ssc.close();
-        SelectionKey key = ssc.register(selector, SelectionKey.OP_ACCEPT);
-        SelectionKey key2 = ssc2.register(selector, SelectionKey.OP_ACCEPT);
-
-        boolean isRun = true;
-        while (isRun) {
-            int keyCount = selector.select();
-            Set<SelectionKey> SelectionKeySet = selector.keys();
-            Set<SelectionKey> selectedKeySet = selector.selectedKeys();
-            System.out.println("keyCount = " + keyCount);
-            System.out.println("SelectionKeySet size = " + SelectionKeySet.size());
-            System.out.println("selectedKeySet size = " + selectedKeySet.size());
-            Iterator<SelectionKey> iterator = selectedKeySet.iterator();
-            while (iterator.hasNext()) {
-                SelectionKey selectionKey = iterator.next();
-                ServerSocketChannel serverSocketChannel = ((ServerSocketChannel) selectionKey.channel());
-                SocketChannel socketChannel = serverSocketChannel.accept();
-                if (socketChannel == null) {
-                    System.out.println("打印这条信息证明是连接8888服务器时,重复消费的情况发生");
-                    System.out.println("将8080关联的 SelectionKey 对应的 SocketChannel 通道取出来");
-                    System.out.println("但是值为 null , socketChannel == null");
-
-                }
-                InetSocketAddress localAddress = (InetSocketAddress) serverSocketChannel.getLocalAddress();
-                System.out.println(localAddress.getPort() + " 被客户端连接了");
-//                iterator.remove();
-            }
-        }
         ssc.close();
-        ssc2.close();
     }
 }
