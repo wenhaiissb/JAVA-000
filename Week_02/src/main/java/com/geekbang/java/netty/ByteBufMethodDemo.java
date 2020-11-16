@@ -14,9 +14,59 @@ import java.nio.charset.Charset;
  */
 public class ByteBufMethodDemo {
     public static void main(String[] args) {
-//        slice();
-//        copy();
-        getAndSet();
+        // randomAccess();
+        // readBytes();
+        // writeBytes();
+        // slice();
+         copy();
+        // getAndSet();
+    }
+
+    private static void writeBytes() {
+        ByteBuf bb1 = Unpooled.buffer();
+        System.out.println(" write before bb1 rind = " + bb1.readerIndex() + " , wind = " + bb1.writerIndex() + ", capacity = " + bb1.capacity());
+        ByteBuf bb2 = Unpooled.wrappedBuffer("1231231".getBytes());
+        System.out.println(" write before bb2 rind = " + bb2.readerIndex() + ", bb2 wind = " + bb2.writerIndex());
+        System.out.println(bb1.writeBytes(bb2));
+        System.out.println(" write after bb1 rind = " + bb1.readerIndex() + " , wind = " + bb1.writerIndex() + ", capacity = " + bb1.capacity());
+        System.out.println(" write after bb2 rind = " + bb2.readerIndex() + ", bb2 wind = " + bb2.writerIndex());
+        bb1.writableBytes();
+    }
+
+    private static void readBytes() {
+        ByteBuf bb1 = Unpooled.wrappedBuffer("1231231".getBytes());
+        ByteBuf bb2 = Unpooled.buffer(5);
+        System.out.println("bb1 rind = " + bb1.readerIndex() + ", bb1 wind = " + bb1.writerIndex());
+        System.out.println("bb2 rind = " + bb2.readerIndex() + ", bb2 wind = " + bb2.writerIndex());
+        bb1.readBytes(bb2);
+        System.out.println("bb1 rind = " + bb1.readerIndex() + ", bb1 wind = " + bb1.writerIndex());
+        System.out.println("bb2 rind = " + bb2.readerIndex() + ", bb2 wind = " + bb2.writerIndex());
+        System.out.println(new String(bb2.array()));
+
+
+        System.out.println("============");
+
+
+        while (bb2.isReadable()) {
+            System.out.print((char) bb2.readByte());
+        }
+        System.out.println("bb2 rind = " + bb2.readerIndex() + ", bb2 wind = " + bb2.writerIndex());
+    }
+
+    private static void randomAccess() {
+        ByteBuf byteBuf = Unpooled.wrappedBuffer("aaccc".getBytes());
+        for (int i = 0; i < byteBuf.capacity(); i++) {
+            System.out.println("reader index = " + byteBuf.readerIndex());
+            System.out.println("writer index = " + byteBuf.writerIndex());
+            System.out.println((char) byteBuf.getByte(i));
+        }
+        System.out.println("==================");
+        System.out.println((char) byteBuf.readByte());
+        System.out.println("reader index = " + byteBuf.readerIndex());
+        System.out.println("writer index = " + byteBuf.writerIndex());
+        byteBuf.discardReadBytes();
+        System.out.println("reader index = " + byteBuf.readerIndex());
+        System.out.println("writer index = " + byteBuf.writerIndex());
     }
 
     /**
