@@ -10,7 +10,19 @@ import java.nio.ByteBuffer;
  */
 public class ByteBufferDemo {
     public static void main(String[] args) {
-        duplicateAndSliceDifference();
+//        duplicateAndSliceDifference();
+        encode();
+    }
+
+    private static void encode() {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        byte[] bytes = "我是你大爷".getBytes();
+        byteBuffer.putInt(bytes.length);
+        byteBuffer.put(bytes);
+        byteBuffer.flip();
+        byte[] result = new byte[byteBuffer.remaining()];
+        byteBuffer.get(result);
+        System.out.println(new String(result));
     }
 
     private static void duplicateAndSliceDifference() {
