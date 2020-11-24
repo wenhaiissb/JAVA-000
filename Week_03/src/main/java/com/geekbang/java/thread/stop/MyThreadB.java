@@ -1,5 +1,7 @@
 package com.geekbang.java.thread.stop;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @ClassName MyThreadA
  * @Description
@@ -21,5 +23,13 @@ public class MyThreadB extends Thread {
         super.run();
         System.out.println(myService.getUsername());
         System.out.println(myService.getPassword());
+        while (true){
+            try {
+                TimeUnit.SECONDS.sleep(4);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName());
+        }
     }
 }

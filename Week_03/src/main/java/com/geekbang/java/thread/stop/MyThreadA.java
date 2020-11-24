@@ -12,6 +12,7 @@ public class MyThreadA extends Thread {
     private MyService myService;
 
     public MyThreadA(MyService myService) {
+        super(null, null, "123", 1);
         this.myService = myService;
     }
 

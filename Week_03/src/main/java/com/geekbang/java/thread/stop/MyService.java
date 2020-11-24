@@ -39,8 +39,9 @@ public class MyService {
         myThreadA.start();
         TimeUnit.SECONDS.sleep(1);
         myThreadB.start();
-        // TimeUnit.SECONDS.sleep(3);
+         TimeUnit.SECONDS.sleep(6);
 //        myThreadA.stop();
+        myThreadB.setName("1231");
         System.out.println("MyThreadA stop 执行后,在下方打印 username 和 password");
 
     }
