@@ -19,12 +19,14 @@ public class MultiMethodInvoke {
         c();
     }
 
-    public void c() {
-        d();
+    synchronized public static void c() {
+//        d();
     }
 
     public void d() {
-        e();
+        synchronized (new Object()) {
+            e();
+        }
     }
 
     public void e() {
